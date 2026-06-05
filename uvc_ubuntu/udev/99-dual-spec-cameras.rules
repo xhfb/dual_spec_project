@@ -1,0 +1,30 @@
+# 固定 V4L2 设备别名（保留内核分配的 /dev/videoN，额外创建符号链接）
+#
+# RGB: Microdia LRCP 1080P (0c45:6370) -> /dev/video_rgb  (index 0 主采集)
+# IR:  HIK HikCamera (2bdf:0102)       -> /dev/video_ir   (index 0 主采集)
+#
+# 安装:
+#   sudo cp udev/99-dual-spec-cameras.rules /etc/udev/rules.d/
+#   sudo cp udev/bind-hik-uvc.sh /usr/local/sbin/
+#   sudo chmod +x /usr/local/sbin/bind-hik-uvc.sh
+#   sudo udevadm control --reload-rules
+#   sudo udevadm trigger -c add -s video4linux
+#   # 若 IR 仍无 video 节点，拔插 HIK 或: sudo /usr/local/sbin/bind-hik-uvc.sh
+
+# HIK 插入时尝试绑定 uvcvideo（部分板子启动时不会自动绑定流接口）
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2bdf", ATTR{idProduct}=="0102", \
+  RUN+="/usr/local/sbin/bind-hik-uvc.sh"
+
+SUBSYSTEM=="video4linux", KERNEL=="video*", ATTR{index}=="0", \
+  ATTRS{idVendor}=="0c45", ATTRS{idProduct}=="6370", \
+  SYMLINK+="video_rgb", GROUP="video", MODE="0664"
+
+SUBSYSTEM=="video4linux", KERNEL=="video*", ATTR{index}=="0", \
+  ATTRS{idVendor}=="2bdf", ATTRS{idProduct}=="0102", \
+  SYMLINK+="video_ir", GROUP="video", MODE="0664"
+
+# 可选：第二路流（元数据/副通道），需要时取消注释
+# SUBSYSTEM=="video4linux", KERNEL=="video*", ATTR{index}=="1", \
+#   ATTRS{idVendor}=="0c45", ATTRS{idProduct}=="6370", SYMLINK+="video_rgb_meta"
+# SUBSYSTEM=="video4linux", KERNEL=="video*", ATTR{index}=="1", \
+#   ATTRS{idVendor}=="2bdf", ATTRS{idProduct}=="0102", SYMLINK+="video_ir_meta"

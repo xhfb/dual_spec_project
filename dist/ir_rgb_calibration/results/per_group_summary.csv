@@ -1,0 +1,5 @@
+group_id,pair_file,n_points,rmse_px,max_err_px,n_within_3px
+0,pair_00,9,3.8393,6.1368,4
+1,pair_01,9,5.1319,8.7372,3
+2,pair_02,9,3.8285,8.6845,6
+3,pair_03,9,4.6275,8.7677,4

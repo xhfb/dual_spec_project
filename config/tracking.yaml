@@ -1,0 +1,21 @@
+# 主目标选择 + 多帧跟踪（RGB 平面，输入为融合框）
+
+tracking:
+  frame_width: 640
+  frame_height: 480
+
+  # 主目标打分权重：confidence / 面积 / 距画面中心
+  w_confidence: 0.50
+  w_area: 0.20
+  w_center: 0.25
+  w_fused_bonus: 0.05        # source=fused 额外加分（双模态一致）
+
+  # 跟踪：IoU 关联 + EMA 平滑
+  match_iou: 0.30
+  max_age: 12                # 连续丢失帧数后删除轨迹
+  min_hits: 2                # 确认轨迹前需连续命中帧数
+  ema_alpha: 0.55            # 框坐标 EMA（越大越跟新检测）
+
+  # 主目标切换滞后：避免 ID 频繁跳变
+  primary_lock_frames: 8     # 当前主目标仍可见时锁定
+  primary_switch_margin: 0.12  # 新候选须比当前主目标分高此差值才切换

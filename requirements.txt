@@ -1,0 +1,12 @@
+# IR->RGB 单应标定与运行期配准依赖
+# 注意：在 RDK X5 板子上请使用【系统 python3】运行（系统已自带带 GStreamer 的 opencv，
+# 以及 fastapi/uvicorn/numpy）。下面版本仅作为在其它环境复现时的参考下限。
+# 不要在缺少 GStreamer 的 venv 里 pip 安装 opencv-python，否则 RGB 取流会失败。
+
+numpy>=1.26
+opencv-python>=4.10        # 板子上用系统 cv2（含 GStreamer），勿覆盖
+fastapi>=0.110
+uvicorn[standard]>=0.27
+PyYAML>=6.0                # config/ir_thermal.yaml
+pyserial>=3.5              # 云台串口 utils/Ptz_X42S.py
+emm_stepper>=1.0           # ZDT_X42S 步进电机（板子环境需已安装）

@@ -1,0 +1,25 @@
+# Late Fusion：RGB YOLO + IR 热检测 决策级融合
+
+fusion:
+  # IoU 关联门限（RGB 平面，IR 框已投影）
+  match_iou_thresh: 0.25
+
+  # 场景权重：正常光照（RGB 置信度较高）
+  w_rgb_normal: 0.70
+  w_ir_normal: 0.30
+
+  # 低照度/逆光：RGB 弱时提高 IR 权重
+  w_rgb_lowlight: 0.25
+  w_ir_lowlight: 0.75
+
+  # 场景判定：帧内 RGB 人体最高置信度
+  rgb_conf_high: 0.45
+  rgb_conf_low: 0.20
+
+  # 未匹配框保留门限
+  rgb_alone_min_score: 0.35
+  ir_alone_min_score: 0.40
+
+  # 融合框坐标：按权重对 RGB / 投影 IR 角点加权
+  fuse_coord: true
+  max_fused: 5

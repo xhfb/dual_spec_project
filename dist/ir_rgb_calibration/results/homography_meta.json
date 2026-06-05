@@ -1,0 +1,27 @@
+{
+  "schema": "homography_meta.v1",
+  "date": "2026-06-05T00:21:04",
+  "groups": 4,
+  "total_points": 36,
+  "Z0": 0.6,
+  "rmse_px": 4.3917,
+  "rmse_inliers_px": 1.6243,
+  "inliers": 18,
+  "outliers": 19,
+  "ransac_thresh": 3.0,
+  "sync_ms": 33.0,
+  "ir_roll_xy": [
+    -164,
+    -2
+  ],
+  "ir_size": [
+    256,
+    192
+  ],
+  "rgb_size": [
+    640,
+    480
+  ],
+  "max_error_px": 8.7677,
+  "passed": true
+}

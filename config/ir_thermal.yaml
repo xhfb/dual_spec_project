@@ -1,0 +1,47 @@
+# IR 热目标检测参数（免训练：温度阈值 + 形态学 + 连通域）
+# 坐标系：256×192 IR 像素，须与标定 roll 对齐后的温度矩阵一致。
+
+ir_thermal:
+  # 阈值策略：otsu | percentile | mean_std | fixed_offset
+  threshold_method: otsu
+  percentile: 99.0
+  mean_std_k: 2.5
+  bg_percentile: 60.0
+  fixed_delta: 800
+
+  # 阈值稳健性：Otsu 失效时回退；对 thr 做分位 clamp
+  otsu_fallback: percentile
+  thr_clamp_low_percentile: 50.0
+  thr_clamp_high_percentile: 99.5
+
+  # 形态学核大小（椭圆直径，奇数）
+  morph_open: 3
+  morph_close: 5
+
+  # 连通域几何滤波
+  min_area: 80
+  max_area: 12000
+  min_aspect: 0.25
+  max_aspect: 4.0
+  min_temp_delta_ratio: 0.15
+
+  # 贴边剔除：小面积且触边的连通域视为传感器 artifact
+  reject_border: true
+  border_margin: 2
+  border_max_area: 500
+
+  # 原始画面上下裁剪：机芯边缘行常有拼接噪点，置为背景值不参与分割
+  crop_top: 8
+  crop_bottom: 8
+
+  # 可选：四边屏蔽（左右边缘无效区，像素）
+  edge_mask_margin: 0
+
+  # 后处理
+  max_detections: 5
+  nms_iou: 0.5
+  class_id: 0
+
+  # roll 对齐（与 homography_meta / thermal_cam_debug 一致；detect 前可另调 align_roll）
+  roll_x: -164
+  roll_y: -2

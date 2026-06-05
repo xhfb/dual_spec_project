@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 编译产物（保留源码，忽略可重新 make 的文件）
+uvc_ubuntu/*.o
+uvc_ubuntu/uvc_demo
+uvc_ubuntu/__pycache__/
+
+# 运行时日志 / PID
+*.log
+*.pid
+uvc_ubuntu/thermal_cam_debug.json
+
+# 本地调试输出（可重新生成）
+output/
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 环境变量与密钥（切勿提交）
+.env
+.env.*
+*.pem
+credentials.json
