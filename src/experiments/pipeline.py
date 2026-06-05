@@ -7,7 +7,7 @@ import sys
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -223,8 +223,17 @@ def run_trial(
     frames: int = 90,
     env_lux: float = float("nan"),
     notes: str = "",
+    on_frame: Optional[
+        Callable[
+            [int, int, np.ndarray, np.ndarray, Optional[DetectionBox], Dict[str, Any], "EvalPipeline"],
+            None,
+        ]
+    ] = None,
+    should_stop: Optional[Callable[[], bool]] = None,
+    pipe: Optional["EvalPipeline"] = None,
 ) -> TrialResult:
-    pipe = EvalPipeline(cfg)
+    if pipe is None:
+        pipe = EvalPipeline(cfg)
     detected = 0
     errors: List[float] = []
     fusion_ious: List[float] = []
@@ -236,7 +245,9 @@ def run_trial(
     frame_metrics: List[Dict[str, Any]] = []
 
     start = time.perf_counter()
-    for _ in range(frames):
+    for fi in range(frames):
+        if should_stop and should_stop():
+            break
         bundle = capture.read()
         primary, err, tid, mean_iou = pipe.process_frame(bundle.rgb, bundle.temp)
         fm = {
@@ -246,6 +257,8 @@ def run_trial(
             "track_id": tid,
         }
         frame_metrics.append(fm)
+        if on_frame is not None:
+            on_frame(fi, frames, bundle.rgb, bundle.temp, primary, fm, pipe)
 
         if primary is not None:
             detected += 1
@@ -266,14 +279,15 @@ def run_trial(
                 lost_since = time.perf_counter()
 
     duration = max(1e-6, time.perf_counter() - start)
+    n_done = len(frame_metrics)
     return TrialResult(
         scenario=scenario,
         mode=cfg.mode,
         trial_id=trial_id,
-        frames=frames,
-        detection_rate=detected / max(1, frames),
+        frames=n_done,
+        detection_rate=detected / max(1, n_done),
         center_error_px=float(np.mean(errors)) if errors else float("nan"),
-        fps=frames / duration,
+        fps=n_done / duration,
         lost_count=lost,
         recovery_ms=recovery_ms,
         fusion_match_iou_mean=float(np.mean(fusion_ious)) if fusion_ious else float("nan"),
